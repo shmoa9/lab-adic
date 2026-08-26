@@ -13,30 +13,36 @@ pass pre-seeded the Hugging Face cache, so a cached load is fast.
 """
 from __future__ import annotations
 
+import json
 import os
 import time
 import uuid
 
 import torch
 from fastapi import FastAPI
+from fastapi.responses import JSONResponse, StreamingResponse
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
 from schemas import (
     ChatCompletionRequest,
     ChatCompletionResponse,
-    HealthResponse,
+    Choice,
+    ModelCard,
     ModelList,
-    ModelCard
+    HealthResponse,
+    ResponseMessage,
+    Usage,
 )
 
 MODEL_ID = os.environ.get("MODEL_ID", "Qwen/Qwen2.5-0.5B-Instruct")
+device = "cuda" if torch.cuda.is_available() else "cpu"  # auto-detect: CUDA if present, else CPU fallback
 
 app = FastAPI(title="serving-stack", version="wk2")
 
 # Load once at import time. CPU only this week.
 print(f"loading {MODEL_ID} on cpu ...")
 tokenizer = AutoTokenizer.from_pretrained(MODEL_ID)
-model = AutoModelForCausalLM.from_pretrained(MODEL_ID, torch_dtype=torch.float32)
+model = AutoModelForCausalLM.from_pretrained(MODEL_ID, torch_dtype=(torch.float16 if device == "cuda" else torch.float32))
 model.to("cpu")
 model.eval()
 print("model ready")
@@ -72,18 +78,8 @@ def list_models() -> ModelList:
     Build a ModelList from schemas.py and return it. Use int(time.time()) for
     created.
     """
-        # TODO: return a ModelList whose single ModelCard.id == MODEL_ID
-
     return ModelList(
-        object="list",
-        data=[
-            {
-                "id": MODEL_ID,
-                "object": "model",
-                "created": int(time.time()),
-                "owned_by": "serving-stack",
-            }
-        ],
+        data=[ModelCard(id=MODEL_ID, created=int(time.time()))]
     )
 
 
@@ -125,65 +121,126 @@ def chat_completions(req: ChatCompletionRequest) -> ChatCompletionResponse:
     Generation blocks the event loop this week. That is acceptable: week 3's
     engine owns concurrency. Name it, do not solve it here.
     """
-    # TODO: implement non-streaming chat completion per the contract above
-     input_ids = tokenizer.apply_chat_template(
-        [m.model_dump() for m in req.messages],
+    # Match the reference: reject an unknown model id with 400, character for
+    # character against the id we actually serve.
+    if req.model != MODEL_ID:
+        return JSONResponse(
+            status_code=400,
+            content={"error": {"message": f"model '{req.model}' not found", "type": "model_not_found"}},
+        )
+
+    messages = [{"role": m.role, "content": m.content} for m in req.messages]
+
+    # NOTE: return_dict=True is requested explicitly rather than relying on
+    # the default return type of apply_chat_template. Newer transformers
+    # majors changed that default; asking for the dict keeps this call site
+    # correct across versions instead of assuming .shape exists on whatever
+    # comes back. (Bug Lab W2D2: the upgrade that broke the contract.)
+    encoded = tokenizer.apply_chat_template(
+        messages,
         add_generation_prompt=True,
         return_tensors="pt",
+        return_dict=True,
     )
-
+    input_ids = encoded["input_ids"].to(device)
+    attention_mask = encoded.get("attention_mask")
+    if attention_mask is not None:
+        attention_mask = attention_mask.to(device)
     prompt_tokens = input_ids.shape[1]
 
-    with torch.no_grad():
-        out = model.generate(
-            input_ids,
-            max_new_tokens=req.max_tokens,
-            do_sample=req.temperature > 0,
-            temperature=req.temperature if req.temperature > 0 else None,
+    do_sample = req.temperature > 0.0
+
+    if req.stream:
+        return StreamingResponse(
+            _stream_chat_completion(input_ids, attention_mask, req, prompt_tokens),
+            media_type="text/event-stream",
         )
+
+    with torch.no_grad():
+        gen_kwargs = dict(
+            input_ids=input_ids,
+            max_new_tokens=req.max_tokens,
+            do_sample=do_sample,
+            pad_token_id=tokenizer.eos_token_id,
+        )
+        if attention_mask is not None:
+            gen_kwargs["attention_mask"] = attention_mask
+        if do_sample:
+            gen_kwargs["temperature"] = req.temperature
+        out = model.generate(**gen_kwargs)
 
     new_tokens = out[0][prompt_tokens:]
     completion_tokens = len(new_tokens)
+    text = tokenizer.decode(new_tokens, skip_special_tokens=True)
 
-    text = tokenizer.decode(
-        new_tokens,
-        skip_special_tokens=True,
-    )
-
-    finish_reason = (
-        "length"
-        if completion_tokens >= req.max_tokens
-        else "stop"
-    )
+    finish_reason = "length" if completion_tokens >= req.max_tokens else "stop"
 
     return ChatCompletionResponse(
         id="chatcmpl-" + uuid.uuid4().hex,
-        object="chat.completion",
         created=int(time.time()),
         model=req.model,
         choices=[
-            {
-                "index": 0,
-                "message": {
-                    "role": "assistant",
-                    "content": text,
-                },
-                "finish_reason": finish_reason,
-            }
+            Choice(
+                index=0,
+                message=ResponseMessage(role="assistant", content=text),
+                finish_reason=finish_reason,
+            )
         ],
-        usage={
-            "prompt_tokens": prompt_tokens,
-            "completion_tokens": completion_tokens,
-            "total_tokens": prompt_tokens + completion_tokens,
-        },
+        usage=Usage(
+            prompt_tokens=prompt_tokens,
+            completion_tokens=completion_tokens,
+            total_tokens=prompt_tokens + completion_tokens,
+        ),
     )
 
 
 # ---------------------------------------------------------------------------
-# Streaming is a DELTA STEP, not required for the green check. See the README.
-# When you add it: same route, if req.stream is True return a
-# StreamingResponse of Server-Sent Events. Each event is
-#   data: {chat.completion.chunk with choices[0].delta.content}\n\n
-# and the stream ends with the literal line
-#   data: [DONE]\n\n
+# Streaming (Delta Step 5). Not required for the green check; verify.py
+# probes it and reports whether it is implemented, but does not fail without
+# it. Generation still runs synchronously to completion under the hood (the
+# model has no incremental/streaming generate path added this week) — tokens
+# are decoded one at a time from the full output and yielded as SSE chunks so
+# the wire format matches the OpenAI streaming contract.
 # ---------------------------------------------------------------------------
+def _stream_chat_completion(input_ids, attention_mask, req, prompt_tokens):
+    completion_id = "chatcmpl-" + uuid.uuid4().hex
+    created = int(time.time())
+    do_sample = req.temperature > 0.0
+
+    with torch.no_grad():
+        gen_kwargs = dict(
+            input_ids=input_ids,
+            max_new_tokens=req.max_tokens,
+            do_sample=do_sample,
+            pad_token_id=tokenizer.eos_token_id,
+        )
+        if attention_mask is not None:
+            gen_kwargs["attention_mask"] = attention_mask
+        if do_sample:
+            gen_kwargs["temperature"] = req.temperature
+        out = model.generate(**gen_kwargs)
+
+    new_tokens = out[0][prompt_tokens:]
+    completion_tokens = len(new_tokens)
+    finish_reason = "length" if completion_tokens >= req.max_tokens else "stop"
+
+    def _chunk(delta: dict, finish: str | None = None) -> str:
+        payload = {
+            "id": completion_id,
+            "object": "chat.completion.chunk",
+            "created": created,
+            "model": req.model,
+            "choices": [{"index": 0, "delta": delta, "finish_reason": finish}],
+        }
+        return f"data: {json.dumps(payload)}\n\n"
+
+    # first chunk announces the role, matching the OpenAI SSE shape
+    yield _chunk({"role": "assistant"})
+
+    for token_id in new_tokens:
+        piece = tokenizer.decode([token_id], skip_special_tokens=True)
+        if piece:
+            yield _chunk({"content": piece})
+
+    yield _chunk({}, finish=finish_reason)
+    yield "data: [DONE]\n\n"# ---------------------------------------------------------------------------
