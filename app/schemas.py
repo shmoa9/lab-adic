@@ -25,7 +25,7 @@ class ChatMessage(BaseModel):
 class ChatCompletionRequest(BaseModel):
     """The body of POST /v1/chat/completions."""
     model: str
-    messages: List[ChatMessage] = Field(..., min_length=1)
+    messages: List[ChatMessage] = Field(. min_length=1)
     # optional generation controls, with OpenAI-compatible names and defaults.
     # max_tokens has no upper bound here: the reference CLAMPS oversized asks
     # to its MAX_TOKENS setting rather than rejecting them (day 5 sets it).
