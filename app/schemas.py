@@ -13,7 +13,7 @@ from __future__ import annotations
 
 from typing import List, Literal, Optional, Union
 
-from pydantic import BaseModel, Field , field_validator
+from pydantic import BaseModel, Field, field_validator
 
 
 class ChatMessage(BaseModel):
@@ -25,28 +25,31 @@ class ChatMessage(BaseModel):
 class ChatCompletionRequest(BaseModel):
     """The body of POST /v1/chat/completions."""
     model: str
-    messages: List[ChatMessage] = Field(min_length=1)
+    # min_length=1 rejects an empty messages list before any handler code runs
+    # (Extra Lab W2D2, step 1).
+    messages: List[ChatMessage] = Field(..., min_length=1)
     # optional generation controls, with OpenAI-compatible names and defaults.
     # max_tokens has no upper bound here: the reference CLAMPS oversized asks
     # to its MAX_TOKENS setting rather than rejecting them (day 5 sets it).
-     max_tokens: int = Field(default=256, ge=1)
+    # ge=1 rejects zero/negative max_tokens instead of letting it reach
+    # model.generate().
+    max_tokens: int = Field(default=256, ge=1)
     temperature: float = Field(default=0.7, ge=0.0, le=2.0)
     stream: bool = False
     # part of the course contract from day 1 so a consumer's payload always
     # validates; accepted and unused until the tool-calling engine (tier 1).
     tools: Optional[List[dict]] = None
     tool_choice: Optional[Union[str, dict]] = None
-@field_validator("messages")
-@classmethod
-def last_message_must_be_user_or_system(cls, v):
-    if not v:
-        raise ValueError("messages must not be empty")
-    if v[-1].role == "assistant":
-        raise ValueError(
-            "the last message must be from 'user' or 'system', not 'assistant'"
-        )
-    return v
-   
+
+    @field_validator("messages")
+    @classmethod
+    def last_message_must_be_user_or_system(cls, v):
+        """Reject a request that asks the model to continue its own turn."""
+        if v and v[-1].role == "assistant":
+            raise ValueError(
+                "the last message must be from 'user' or 'system', not 'assistant'"
+            )
+        return v
 
 
 class ResponseMessage(BaseModel):
