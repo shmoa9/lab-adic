@@ -36,6 +36,16 @@ class ChatCompletionRequest(BaseModel):
     # validates; accepted and unused until the tool-calling engine (tier 1).
     tools: Optional[List[dict]] = None
     tool_choice: Optional[Union[str, dict]] = None
+
+ @field_validator("messages")
+    @classmethod
+    def last_message_must_be_user_or_system(cls, v):
+        """Reject a request that asks the model to continue its own turn."""
+        if v and v[-1].role == "assistant":
+            raise ValueError(
+                "the last message must be from 'user' or 'system', not 'assistant'"
+            )
+        return v
    
 
 
