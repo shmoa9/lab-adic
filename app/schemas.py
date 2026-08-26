@@ -41,6 +41,8 @@ class ChatCompletionRequest(BaseModel):
     @classmethod
     def last_message_must_be_user_or_system(cls, v):
         """Reject a request that asks the model to continue its own turn."""
+        if not v:
+            raise ValueError("message must be empthy")
         if v and v[-1].role == "assistant":
             raise ValueError(
                 "the last message must be from 'user' or 'system', not 'assistant'"
