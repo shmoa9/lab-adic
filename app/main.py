@@ -72,8 +72,17 @@ def list_models() -> ModelList:
     Build a ModelList from schemas.py and return it. Use int(time.time()) for
     created.
     """
-    # TODO: return a ModelList whose single ModelCard.id == MODEL_ID
-    raise NotImplementedError("implement GET /v1/models")
+    return ModelList(
+        object="list",
+        data=[
+            {
+                "id": MODEL_ID,
+                "object": "model",
+                "created": int(time.time()),
+                "owned_by": "serving-stack",
+            }
+        ],
+    )
 
 
 # ---------------------------------------------------------------------------
