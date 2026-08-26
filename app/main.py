@@ -19,7 +19,7 @@ import time
 import uuid
 
 import torch
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPEexeption
 from fastapi.responses import JSONResponse, StreamingResponse
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
@@ -88,6 +88,11 @@ def list_models() -> ModelList:
 # ---------------------------------------------------------------------------
 @app.post("/v1/chat/completions", response_model=ChatCompletionResponse)
 def chat_completions(req: ChatCompletionRequest) -> ChatCompletionResponse:
+    if req.messages[-1].role == "assistant":
+    raise HTTPException(
+        status_code=422,
+        detail="the last message must be from 'user' or 'system', not 'assistant'",
+    )
     """Run the model over the messages and return an OpenAI-compatible completion.
 
     Contract (non-streaming, the week-2 target):
