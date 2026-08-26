@@ -13,7 +13,7 @@ from __future__ import annotations
 
 from typing import List, Literal, Optional, Union
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field , field_validator
 
 
 class ChatMessage(BaseModel):
