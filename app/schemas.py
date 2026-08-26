@@ -25,12 +25,12 @@ class ChatMessage(BaseModel):
 class ChatCompletionRequest(BaseModel):
     """The body of POST /v1/chat/completions."""
     model: str
-    messages: List[ChatMessage] = Field(. min_length=1)
+    messages: List[ChatMessage] 
     # optional generation controls, with OpenAI-compatible names and defaults.
     # max_tokens has no upper bound here: the reference CLAMPS oversized asks
     # to its MAX_TOKENS setting rather than rejecting them (day 5 sets it).
-    max_tokens: Optional[int] = Field(default=256, ge=1, le=4096)
-    temperature: Optional[float] = Field(default=1.0, ge=0.0, le=2.0)
+     max_tokens: int = Field(default=256, ge=1)
+    temperature: float = Field(default=0.7, ge=0.0, le=2.0)
     stream: bool = False
     # part of the course contract from day 1 so a consumer's payload always
     # validates; accepted and unused until the tool-calling engine (tier 1).
