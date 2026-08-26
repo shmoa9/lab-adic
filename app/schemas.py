@@ -41,7 +41,7 @@ class ChatCompletionRequest(BaseModel):
     tools: Optional[List[dict]] = None
     tool_choice: Optional[Union[str, dict]] = None
 
-    @field_validator("messages")
+     @field_validator("messages")
     @classmethod
     def last_message_must_be_user_or_system(cls, v):
         """Reject a request that asks the model to continue its own turn."""
