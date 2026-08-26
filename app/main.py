@@ -26,6 +26,7 @@ from schemas import (
     ChatCompletionResponse,
     HealthResponse,
     ModelList,
+    ModelCard
 )
 
 MODEL_ID = os.environ.get("MODEL_ID", "Qwen/Qwen2.5-0.5B-Instruct")
