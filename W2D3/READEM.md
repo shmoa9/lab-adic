@@ -27,8 +27,8 @@ The Docker images was compared with the naive image.
 
 | Stage | Image Size |
 |---|---:|
-| Naive build (full base, cached pip) | 6.6 GB |
-| Slim build | 1.61 GB |
+| Naive build | 6.6 GB  |
+| Slim build  | 1.61 GB |
 
 ## 7. Docker Hub Push
 
