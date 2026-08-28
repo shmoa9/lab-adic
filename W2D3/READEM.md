@@ -25,12 +25,20 @@
 
 The Docker images were compared to evaluate their sizes.
 
-
 | Image | Size |
 |---|---:|
 | Naive build | 6.6 GB |
 | CPU build | 1.61 GB |
 | GPU build | 12.5 GB |
+
+## 7. Docker Hub Push
+
+<img width="522" height="225" alt="Screenshot 2026-08-28 170915" src="https://github.com/user-attachments/assets/07ca2dec-3d57-4561-b1c6-aa0c405e621b" />
+The Docker image was successfully pushed to Docker Hub.
+
+
+
+
 
 
 
