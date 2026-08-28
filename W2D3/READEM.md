@@ -35,6 +35,11 @@ The Docker images was compared with the naive image.
 <img width="522" height="225" alt="Screenshot 2026-08-28 170915" src="https://github.com/user-attachments/assets/07ca2dec-3d57-4561-b1c6-aa0c405e621b" />
 The Docker image was successfully pushed to Docker Hub.
 
+## 8.Final Verification
+
+<img width="278" height="101" alt="Screenshot 2026-08-28 173732" src="https://github.com/user-attachments/assets/1091634f-2369-4afa-8016-9c5d7410d71e" />
+
+
 
 
 
