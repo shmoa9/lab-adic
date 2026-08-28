@@ -1,4 +1,4 @@
-W2D2 – Model Serving API
+# Lab W2D2: Model Serving API
 
 This project wraps Qwen/Qwen2.5-0.5B-Instruct behind an OpenAI-compatible FastAPI service running on CPU.
 
