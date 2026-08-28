@@ -23,13 +23,12 @@
 
 <img width="489" height="60" alt="Screenshot 2026-08-28 162405" src="https://github.com/user-attachments/assets/ef17888d-1c89-499c-a0f6-c86c397decda" />
 
-The Docker images were compared to evaluate their sizes.
+The Docker images was compared with the naive image.
 
-| Image | Size |
+| Stage | Image Size |
 |---|---:|
-| Naive build | 6.6 GB |
-| CPU build | 1.61 GB |
-| GPU build | 12.5 GB |
+| Naive build (full base, cached pip) | 6.6 GB |
+| Slim build | 1.61 GB |
 
 ## 7. Docker Hub Push
 
