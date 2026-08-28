@@ -33,6 +33,7 @@ The Docker images was compared with the naive image.
 ## 7. Docker Hub Push
 
 <img width="522" height="225" alt="Screenshot 2026-08-28 170915" src="https://github.com/user-attachments/assets/07ca2dec-3d57-4561-b1c6-aa0c405e621b" />
+
 The Docker image was successfully pushed to Docker Hub.
 
 ## 8.Final Verification
