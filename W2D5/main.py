@@ -11,14 +11,15 @@ Model: Qwen/Qwen2.5-0.5B-Instruct (about 0.5B params; loads on CPU in seconds
 once cached). The first ever load downloads weights; the prep-week verify-env
 pass pre-seeded the Hugging Face cache, so a cached load is fast.
 """
-from __future__ import annotations
+
+from _future_ import annotations
 
 import os
 import time
 import uuid
 
 import torch
-from fastapi import FastAPI
+from fastapi import FastAPI, Header, HTTPException
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
 from schemas import (
@@ -33,20 +34,38 @@ from schemas import (
 )
 
 MODEL_ID = os.environ.get("MODEL_ID", "Qwen/Qwen2.5-0.5B-Instruct")
+API_KEY = os.environ.get("API_KEY", "")
+MAX_TOKENS = int(os.environ.get("MAX_TOKENS", "256"))
 
 app = FastAPI(title="serving-stack", version="wk2")
+
+
+# ---------------------------------------------------------------------------
+# API key protection
+# ---------------------------------------------------------------------------
+def require_api_key(authorization: str | None) -> None:
+    if not API_KEY:
+        print("WARNING: API_KEY is not set; /v1 endpoints are open")
+        return
+
+    if authorization != f"Bearer {API_KEY}":
+        raise HTTPException(status_code=401, detail="Unauthorized")
+
 
 # Load once at import time. CPU only this week.
 print(f"loading {MODEL_ID} on cpu ...")
 tokenizer = AutoTokenizer.from_pretrained(MODEL_ID)
-model = AutoModelForCausalLM.from_pretrained(MODEL_ID, torch_dtype=torch.float32)
+model = AutoModelForCausalLM.from_pretrained(
+    MODEL_ID,
+    torch_dtype=torch.float32,
+)
 model.to("cpu")
 model.eval()
 print("model ready")
 
 
 # ---------------------------------------------------------------------------
-# GET /health  -- DONE. This is the worked example. Copy its shape.
+# GET /health -- DONE
 # ---------------------------------------------------------------------------
 @app.get("/health", response_model=HealthResponse)
 def health() -> HealthResponse:
@@ -60,22 +79,15 @@ def health() -> HealthResponse:
 
 
 # ---------------------------------------------------------------------------
-# GET /v1/models  -- TODO
+# GET /v1/models
 # ---------------------------------------------------------------------------
 @app.get("/v1/models", response_model=ModelList)
-def list_models() -> ModelList:
-    """List the served model id(s).
+def list_models(
+    authorization: str | None = Header(default=None),
+) -> ModelList:
+    """List the served model id(s)."""
+    require_api_key(authorization)
 
-    Contract (OpenAI-compatible):
-      response body: {"object": "list", "data": [ {ModelCard}, ... ]}
-      each ModelCard has: id (== MODEL_ID), object == "model", created (unix
-      seconds), owned_by.
-    Week 2 serves exactly one model, so data has one entry: MODEL_ID.
-
-    Build a ModelList from schemas.py and return it. Use int(time.time()) for
-    created.
-    """
-    # TODO: return a ModelList whose single ModelCard.id == MODEL_ID
     return ModelList(
         data=[
             ModelCard(
@@ -87,10 +99,18 @@ def list_models() -> ModelList:
 
 
 # ---------------------------------------------------------------------------
-# POST /v1/chat/completions  -- TODO (non-streaming first)
+# POST /v1/chat/completions
 # ---------------------------------------------------------------------------
 @app.post("/v1/chat/completions", response_model=ChatCompletionResponse)
-def chat_completions(req: ChatCompletionRequest) -> ChatCompletionResponse:
+def chat_completions(
+    req: ChatCompletionRequest,
+    authorization: str | None = Header(default=None),
+) -> ChatCompletionResponse:
+    require_api_key(authorization)
+
+    # Hard upper bound from the environment.
+    max_tokens = min(req.max_tokens, MAX_TOKENS)
+
     input_ids = tokenizer.apply_chat_template(
         [m.model_dump() for m in req.messages],
         add_generation_prompt=True,
@@ -103,14 +123,14 @@ def chat_completions(req: ChatCompletionRequest) -> ChatCompletionResponse:
         if req.temperature > 0:
             out = model.generate(
                 input_ids,
-                max_new_tokens=req.max_tokens,
+                max_new_tokens=max_tokens,
                 do_sample=True,
                 temperature=req.temperature,
             )
         else:
             out = model.generate(
                 input_ids,
-                max_new_tokens=req.max_tokens,
+                max_new_tokens=max_tokens,
                 do_sample=False,
             )
 
@@ -124,7 +144,7 @@ def chat_completions(req: ChatCompletionRequest) -> ChatCompletionResponse:
 
     finish_reason = (
         "length"
-        if completion_tokens >= req.max_tokens
+        if completion_tokens >= max_tokens
         else "stop"
     )
 
@@ -146,11 +166,8 @@ def chat_completions(req: ChatCompletionRequest) -> ChatCompletionResponse:
             total_tokens=prompt_tokens + completion_tokens,
         ),
     )
+
+
 # ---------------------------------------------------------------------------
-# Streaming is a DELTA STEP, not required for the green check. See the README.
-# When you add it: same route, if req.stream is True return a
-# StreamingResponse of Server-Sent Events. Each event is
-#   data: {chat.completion.chunk with choices[0].delta.content}\n\n
-# and the stream ends with the literal line
-#   data: [DONE]\n\n
+# Streaming is a DELTA STEP, not required for the green check.
 # ---------------------------------------------------------------------------
