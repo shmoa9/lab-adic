@@ -28,3 +28,4 @@ Colab Tesla T4 GPU detected
 
 ## 6. Final Verification
 
+<img width="430" height="117" alt="Screenshot 2026-08-29 161707" src="https://github.com/user-attachments/assets/ecf41e2d-f13c-48ee-81e3-7df7cbfc9dd4" />
