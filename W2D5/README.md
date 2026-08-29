@@ -14,7 +14,7 @@
 
 ## 4. Verify Container Health Status
 
-<img width="712" height="80" alt="Screenshot 2026-08-29 173545" src="https://github.com/user-attachments/assets/eaf39ff6-0c48-4b0c-928e-6dd65224ff8e" />
+<img width="699" height="73" alt="Screenshot 2026-08-29 180758" src="https://github.com/user-attachments/assets/8cd9f067-1e9d-4dee-82d7-993855e421db" />
 
 ## 5. Test API Authentication Without API Key
 <img width="439" height="42" alt="Screenshot 2026-08-29 175056" src="https://github.com/user-attachments/assets/a01fc1ea-ed53-4058-997d-1576ca7dcdd6" />
