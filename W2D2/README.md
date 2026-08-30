@@ -30,6 +30,3 @@ Model
 
 Qwen/Qwen2.5-0.5B-Instruct
 
-Notes
-
-Model generation runs synchronously on CPU and blocks while generating. Concurrency is intentionally not handled in this week-2 implementation.
