@@ -29,7 +29,7 @@
 - Batch 8: 81.1 tok/s (Slot efficiency: ~0.344)
 
 
-###  KV Formula Validation: Measured 28.0 KB/token vs Theoretical 28.0 KB/token (PASS).
+###  KV Cache Footprint Verification: Measured 28.0 KB/token vs Theoretical 28.0 KB/token (PASS).
 
 <img width="446" height="100" alt="Screenshot 2026-08-31 150026" src="https://github.com/user-attachments/assets/0970e789-0ab1-4794-8a9f-807d61485918" />
 
