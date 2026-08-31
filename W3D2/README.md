@@ -14,16 +14,16 @@
 
 ## Results
 
-### TTFT Scaling (Prefill):
+### TTFT Scaling :
 - 128 tokens: 0.0375s
 - 512 tokens: 0.0673s
 - 2048 tokens: 0.3234s 
 
-### TPOT (Decode):
+### TPOT :
 - 0.0379s/token
 
 
-### Static Batching Straggler Tax:
+### Static Batching Straggler Tax :
 - Batch 1: 28.2 tok/s (Slot efficiency: 1.000)
 - Batch 4: 41.6 tok/s (Slot efficiency: ~0.344)
 - Batch 8: 81.1 tok/s (Slot efficiency: ~0.344)
