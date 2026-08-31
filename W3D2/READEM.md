@@ -1,4 +1,4 @@
-#. Lab W3D2: inference anatomy 
+## Lab W3D2: inference anatomy 
 
 
 ## Prediction Card (By Hand)
