@@ -3,7 +3,7 @@
 
 ## Prediction Card (By Hand)
 
--Time to first token (TTFT) is dominated by prefill (reading the whole prompt). A longer prompt makes TTFT go →  up
+- Time to first token (TTFT) is dominated by prefill (reading the whole prompt). A longer prompt makes TTFT go →  up
 - After the first token, decode emits one token at a time. The mean gap between tokens (TPOT) depends mostly on → model size
   and memory bandwidth
 - KV cache math for Qwen2.5-1.5B: 28 layers, 2 KV heads, head_dim 128, fp16.
@@ -20,7 +20,7 @@
 - 2048 tokens: 0.3234s 
 
 ### TPOT (Decode):
-  0.0379s/token
+- 0.0379s/token
 
 
 ### Static Batching Straggler Tax:
@@ -35,8 +35,29 @@
 
 
 
-## Inference Anatomy Baselines
-baselines.json  ,, kv_check.json
+
+## Extra Lab W3D2: the paged KV allocator
+
+## Prediction Card (By Hand)
+- Fraction of unused reserved slab (4096 max vs 300 avg)  → 90%
+- Blocks needed for a 300-token sequence (block size 16)  → 19 blocks.
+- Blocks needed for a 4096-token sequence (block size 16) → 256 blocks.
+
+  ## KV Cost
+
+28 KB/token  
+448 KB/block
+
+## Result
+
+- Naive Slab (Max-length)   : 18 admitted , 42 rejected  
+- Block-Pool (Paged 16-tok) : 60 admitted , 0 rejected
+
+  ### Block-Pool Advantage: 3.33x
+  ### Verification:
+  
+  <img width="452" height="76" alt="Screenshot 2026-08-31 154721" src="https://github.com/user-attachments/assets/8548d1ce-9f44-4800-b798-ccbac4b55b8e" />
+
 
 
 
