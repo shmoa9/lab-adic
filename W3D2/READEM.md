@@ -48,8 +48,8 @@
 
 ## Result
 
-- Naive Slab (Max-length)   : 18 admitted  , 42 rejected  
-- Block-Pool (Paged 16-tok) : 60 admitted  , 0 rejected
+- Naive Slab   : 18 admitted  , 42 rejected  
+- Block-Pool   : 60 admitted  , 0 rejected
 
   ### Block-Pool Advantage: 3.33x
   ### Verification:
