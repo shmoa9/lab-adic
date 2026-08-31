@@ -31,9 +31,7 @@
 
 ###  KV Formula Validation: Measured 28.0 KB/token vs Theoretical 28.0 KB/token (PASS).
 
-  <img width="446" height="100" alt="Screenshot 2026-08-31 150026" src="https://github.com/user-attachments/assets/74849121-c304-456a-9100-8fbc23cb3941" />
-
-
+<img width="446" height="100" alt="Screenshot 2026-08-31 150026" src="https://github.com/user-attachments/assets/0970e789-0ab1-4794-8a9f-807d61485918" />
 
 
 ## Extra Lab W3D2: the paged KV allocator
@@ -45,19 +43,18 @@
 
   ## KV Cost
 
-28 KB/token  
-448 KB/block
+-  28 KB/token  
+-  448 KB/block
 
 ## Result
 
-- Naive Slab (Max-length)   : 18 admitted , 42 rejected  
-- Block-Pool (Paged 16-tok) : 60 admitted , 0 rejected
+- Naive Slab (Max-length)   : 18 admitted  , 42 rejected  
+- Block-Pool (Paged 16-tok) : 60 admitted  , 0 rejected
 
   ### Block-Pool Advantage: 3.33x
   ### Verification:
   
-  <img width="452" height="76" alt="Screenshot 2026-08-31 154721" src="https://github.com/user-attachments/assets/8548d1ce-9f44-4800-b798-ccbac4b55b8e" />
-
+  <img width="452" height="76" alt="Screenshot 2026-08-31 154721" src="https://github.com/user-attachments/assets/35dd7ba3-f834-4cbd-bf8b-5ace26bc0fcf" />
 
 
 
