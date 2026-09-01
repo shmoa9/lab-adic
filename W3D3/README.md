@@ -18,7 +18,7 @@
 
  * Static batching scaling : *3.05x*
  * vLLM scaling : *4.11x*
- * vLLM scaling is *1.35x larger* than static batching.
+ * vLLM scaling is *1.35x larger* 
 
    
 ## Verification 
