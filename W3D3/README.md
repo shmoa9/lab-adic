@@ -39,12 +39,12 @@
 
 ### 2. Load Shedding Sweep Across Burst Sizes (cap=8)
 
-| Burst Size (N) | Accepted | Shed | Accepted p95 Latency | Invariant Status |
+| Burst Size (N) | Accepted | Shed | Accepted p95 Latency | 
 |---:|---:|---:|---:|---|
-| 8 | 8 | 0 | 0.465 s | In-flight within safe bounds |
-| 16 | 8 | 8 | 0.389 s | Overflow rejected fast |
-| 32 | 8 | 24 | 0.408 s | Overflow rejected fast |
-| 50 | 8 | 42 | 0.392 s | Overflow rejected fast |
+| 8 | 8 | 0 | 0.465 s | 
+| 16 | 8 | 8 | 0.389 s | 
+| 32 | 8 | 24 | 0.408 s | 
+| 50 | 8 | 42 | 0.392 s | 
 
 ### Verified
 
