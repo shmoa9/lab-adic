@@ -4,7 +4,7 @@
 * At concurrency 8, vLLM’s throughput will be about → 2.0x .
 * Monday’s static batching scales from batch 1 to batch 8 by → 3.05x.
 *  Predict how it scales from concurrency 1 to 8: → 3.5x.
-* vLLM’s scaling multiple to be → larger than static batching, and roughly → 1.15x larger.
+* vLLM’s scaling multiple to be larger than static batching, and roughly → 1.15x larger.
 
 ## Results
 
