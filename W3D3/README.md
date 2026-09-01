@@ -14,8 +14,12 @@
 | 4 | 48.0 tokens/s | 161.6 tokens/s | 3.37x |
 | 8 | 98.9 tokens/s | 230.4 tokens/s | 2.33x |
 
-*Key Result:* vLLM achieved a *2.33x speedup* at concurrency 8.
+## Scaling
 
+ * Static batching scaling : *3.05x*
+ * vLLM scaling : *4.11x*
+ * vLLM scaling is *1.35x larger* than static batching.
+ * 
 ## Verification 
 
 <img width="375" height="74" alt="Screenshot 2026-09-01 140525" src="https://github.com/user-attachments/assets/1cb09f66-6cdc-41ba-8042-fd089c886031" />
