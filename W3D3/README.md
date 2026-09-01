@@ -32,14 +32,14 @@
 
 ### 1. Unbounded Baseline vs. Load Shedding (Burst = 50)
 
-| Strategy | Requests Sent | Accepted | Shed (Rejected) | p95 Latency (Accepted) | Mean Latency |
+| Strategy | Requests Sent | Accepted | Shed  | p95 Latency  | Mean Latency |
 |---|---:|---:|---:|---:|---:|
 | Naive (Unbounded) | 50 | 50 | 0 | 1.187 s | 1.158 s |
 | Shedded (cap=8) | 50 | 8 | 42 | 0.91 s | — |
 
 ### 2. Load Shedding Sweep Across Burst Sizes (cap=8)
 
-| Burst Size (N) | Accepted | Shed | Accepted p95 Latency |
+| Burst Size (N) | Accepted | Shed | p95 Latency |
 |---:|---:|---:|---:|
 | 8 | 8 | 0 | 0.465 s |
 | 16 | 8 | 8 | 0.389 s |
