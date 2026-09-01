@@ -39,15 +39,15 @@
 
 ### 2. Load Shedding Sweep Across Burst Sizes (cap=8)
 
-| Burst Size (N) | Accepted | Shed | Accepted p95 Latency | 
-|---:|---:|---:|---:|---|
-| 8 | 8 | 0 | 0.465 s | 
-| 16 | 8 | 8 | 0.389 s | 
-| 32 | 8 | 24 | 0.408 s | 
-| 50 | 8 | 42 | 0.392 s | 
+| Burst Size (N) | Accepted | Shed | Accepted p95 Latency |
+|---:|---:|---:|---:|
+| 8 | 8 | 0 | 0.465 s |
+| 16 | 8 | 8 | 0.389 s |
+| 32 | 8 | 24 | 0.408 s |
+| 50 | 8 | 42 | 0.392 s |
+
 
 ### Verified
-
 GREEN CHECK: PASS
 
 <img width="464" height="88" alt="Screenshot 2026-09-01 154335" src="https://github.com/user-attachments/assets/de367e1e-1854-49af-883f-03649902ec38" />
