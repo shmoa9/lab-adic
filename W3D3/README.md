@@ -26,5 +26,30 @@
 <img width="375" height="74" alt="Screenshot 2026-09-01 140525" src="https://github.com/user-attachments/assets/1cb09f66-6cdc-41ba-8042-fd089c886031" />
 
 
+# Extra Lab W3D3: Client-Side Load Shedding Under Overload
+
+## Results
+
+### 1. Unbounded Baseline vs. Load Shedding (Burst = 50)
+
+| Strategy | Requests Sent | Accepted | Shed (Rejected) | p95 Latency (Accepted) | Mean Latency |
+|---|---:|---:|---:|---:|---:|
+| Naive (Unbounded) | 50 | 50 | 0 | 1.187 s | 1.158 s |
+| Shedded (cap=8) | 50 | 8 | 42 | 0.910 s | — |
+
+### 2. Load Shedding Sweep Across Burst Sizes (cap=8)
+
+| Burst Size (N) | Accepted | Shed | Accepted p95 Latency | Invariant Status |
+|---:|---:|---:|---:|---|
+| 8 | 8 | 0 | 0.465 s | In-flight within safe bounds |
+| 16 | 8 | 8 | 0.389 s | Overflow rejected fast |
+| 32 | 8 | 24 | 0.408 s | Overflow rejected fast |
+| 50 | 8 | 42 | 0.392 s | Overflow rejected fast |
+
+### Verified
+
+GREEN CHECK: PASS
+
+<img width="464" height="88" alt="Screenshot 2026-09-01 154335" src="https://github.com/user-attachments/assets/de367e1e-1854-49af-883f-03649902ec38" />
 
 
