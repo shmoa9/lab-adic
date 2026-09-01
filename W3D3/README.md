@@ -35,7 +35,7 @@
 | Strategy | Requests Sent | Accepted | Shed (Rejected) | p95 Latency (Accepted) | Mean Latency |
 |---|---:|---:|---:|---:|---:|
 | Naive (Unbounded) | 50 | 50 | 0 | 1.187 s | 1.158 s |
-| Shedded (cap=8) | 50 | 8 | 42 | 0.910 s | — |
+| Shedded (cap=8) | 50 | 8 | 42 | 0.91 s | — |
 
 ### 2. Load Shedding Sweep Across Burst Sizes (cap=8)
 
