@@ -13,6 +13,7 @@
 | 1 | 32.4 tokens/s | 56.1 tokens/s | 1.73x |
 | 4 | 48.0 tokens/s | 161.6 tokens/s | 3.37x |
 | 8 | 98.9 tokens/s | 230.4 tokens/s | 2.33x |
+
 *Key Result:* vLLM achieved a *2.33x speedup* at concurrency 8.
 
 ## Verification 
