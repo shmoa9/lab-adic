@@ -3,7 +3,7 @@
 ## Predictions
 - AWQ VRAM: much lower
 - Tokens/s: faster
-- Valid tool calls: 8/8
+- Valid tool calls: 7/8
 
 ## Results
 - Model: Qwen/Qwen2.5-1.5B-Instruct-AWQ
