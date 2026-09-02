@@ -6,7 +6,7 @@
 - Valid tool calls: 7/8
 
 ## Results
-- Model: Qwen/Qwen2.5-1.5B-Instruct-AWQ
+- Model: 'Qwen/Qwen2.5-1.5B-Instruct-AWQ'
 - Smoke Test: 10/10
 
 ## Verification
