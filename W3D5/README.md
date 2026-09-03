@@ -2,10 +2,8 @@
 
 ## Predict
 
-As concurrency rises, throughput (tokens/s) should increase, then flatten, while p95 latency should remain low at first and then increase. I predict that the knee will be at about:
-> → *16*
-I choose a target p95 end-to-end latency of:
-> → *2.0 seconds*
+As concurrency rises, throughput (tokens/s) climbs, then flattens; p95 latency is flat at low concurrency, then climbs. Your knee (where p95 crosses target as throughput stops rising) will be at about concurrency : > → *16*
+Pick a target: p95 end-to-end latency of: > → *2.0 seconds*. This is your SLO for today.
 
 ## Results
 
