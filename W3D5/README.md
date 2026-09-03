@@ -1,6 +1,6 @@
 # Lab W3D5: the benchmark harness
 
-## Predict
+## Prediction Card
 
 As concurrency rises, throughput (tokens/s) climbs, then flattens; p95 latency is flat at low concurrency, then climbs. Your knee (where p95 crosses target as throughput stops rising) will be at about concurrency :  → *16*
 
@@ -15,12 +15,6 @@ Pick a target: p95 end-to-end latency of: → *2.0 seconds*. This is your SLO fo
 | 4 | 274.76 | 0.143 | 1.720 | 0 |
 | 8 | 438.59 | 0.171 | 2.089 | 0 |
 | 16 | 685.13 | 0.253 | 2.422 | 0 |
-
-- *Model:* Qwen/Qwen2.5-1.5B-Instruct-AWQ
-- *Knee:* 4
-- *Tokens/s:* 274.76
-- *p95:* 1.7199s
-- *Errors:* 0
 
 
 ## Verification 
