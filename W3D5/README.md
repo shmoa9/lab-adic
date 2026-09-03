@@ -16,6 +16,8 @@ Pick a target: p95 end-to-end latency of: → *2.0 seconds*. This is your SLO fo
 | 8 | 438.59 | 0.171 | 2.089 | 0 |
 | 16 | 685.13 | 0.253 | 2.422 | 0 |
 
+- p95 SLO: *2.0 seconds*
+- Knee concurrency: *4*
 
 ## Verification 
 
